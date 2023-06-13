@@ -13,7 +13,7 @@ def scrape_and_save_data(dt):
         os.makedirs(directory)
 
     df = pd.read_html(url, header=None)
-    Planned = df[0].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival'], axis=1, inplace=False)
+    Planned = df[0].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival','Daily'], axis=1, inplace=False)
     Forced = df[1].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival'], axis=1, inplace=False)
     Planned.dropna(inplace=True)
     Forced.dropna(inplace=True)
