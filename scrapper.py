@@ -33,14 +33,10 @@ def main():
             st.error("Invalid date format. Please enter the date in DD-MM-YYYY format.")
 
     # Download button for the output file
-    if os.path.exists("NRLDC_daily_reports"):
-        files = os.listdir("NRLDC_daily_reports")
-        if len(files) > 0:
-            selected_file = st.selectbox("Select the Excel file to download", files)
-            if st.button("Download"):
-                with open(os.path.join("NRLDC_daily_reports", selected_file), "rb") as file:
-                    data = file.read()
-                    st.download_button(label="Download Excel", data=data, file_name=selected_file)
+    
+     selected_file = st.selectbox("Select the Excel file to download", NLDC)
+     if st.button("Download"):
+        st.download_button(label="Download Excel", file_name=selected_file)
 
 if __name__ == "__main__":
     main()
