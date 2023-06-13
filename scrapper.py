@@ -1,18 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 13 11:08:02 2023
-
-@author: u56170
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 13 10:52:39 2023
-
-@author: u56170
-"""
-
 import streamlit as st
+import requests
 import pandas as pd
 import os
 
@@ -44,15 +31,18 @@ def scrape_and_save_data(dt):
 # Streamlit app
 def main():
     st.title("NRLDC Data Scraper")
-    st.write("Select a date to scrape data from the NRLDC website and download the output Excel file.")
+    st.write("Select a date (DD-MM-YYYY) to scrape data from the NRLDC website and download the output Excel file.")
 
     # Date selection dropdown
-    dt = st.date_input("Select a date")
+    dt = st.text_input("Enter a date (DD-MM-YYYY)")
 
     # Scrape and save data
     if st.button("Scrape and Save"):
-        scrape_and_save_data(dt.strftime("%d-%m-%Y"))
-        st.success("Data scraped and saved successfully!")
+        if len(dt) == 10 and dt[2] == '-' and dt[5] == '-':
+            scrape_and_save_data(dt)
+            st.success("Data scraped and saved successfully!")
+        else:
+            st.error("Invalid date format. Please enter the date in DD-MM-YYYY format.")
 
     # Download button for the output file
     if os.path.exists("NRLDC_daily_reports"):
@@ -66,3 +56,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
