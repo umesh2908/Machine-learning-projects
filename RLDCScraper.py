@@ -1,6 +1,8 @@
 import streamlit as st
 import os
 import requests
+import zipfile
+import tempfile
 from datetime import datetime, timedelta
 
 @st.cache
@@ -16,20 +18,31 @@ def generate_dates(start_date, end_date):
 
 def download_reports(start_date, end_date):
     base_url = "https://reporting.wrldc.in/dailyreports/GenOutage/2023/March/WRLDC_GenOutage_Report_"
-    folder_name = "reports"
     dates = generate_dates(start_date, end_date)
-    os.makedirs(folder_name, exist_ok=True)
-    for date in dates:
-        url = f"{base_url}{date}.pdf"
-        filename = url.split('/')[-1]
-        filepath = os.path.join(folder_name, filename)
-        if os.path.exists(filepath):
-            st.write(f'The file {filename} already exists in the {folder_name} directory.')
-        else:
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for date in dates:
+            url = f"{base_url}{date}.pdf"
+            filename = url.split('/')[-1]
+            filepath = os.path.join(temp_dir, filename)
             response = requests.get(url)
             with open(filepath, 'wb') as f:
                 f.write(response.content)
-                st.write(f'The file {filename} has been downloaded and saved in the {folder_name} directory.')
+        
+        # Create a zip file containing the downloaded reports
+        zip_filename = "reports.zip"
+        zip_filepath = os.path.join(temp_dir, zip_filename)
+        with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(temp_dir):
+                for file in files:
+                    zipf.write(os.path.join(root, file), file)
+
+        # Provide download link for the zip file
+        st.download_button(
+            label="Download Reports",
+            data=open(zip_filepath, "rb").read(),
+            file_name=zip_filename
+        )
 
 def main():
     st.title("Report Downloader")
