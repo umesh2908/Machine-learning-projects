@@ -7,26 +7,14 @@ import os
 def scrape_and_save_data(dt):
     url = "https://oms.nrldc.in/outageReport/genUnitReport.php?start={}&dt={}&owner=&eltype=".format(dt, dt)
 
-    # create a directory to store the downloaded files
-    directory = "NRLDC_daily_reports"
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
     df = pd.read_html(url, header=None)
-    Planned = df[0].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival','Daily'], axis=1, inplace=False)
+    Planned = df[0].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival', 'Daily'], axis=1, inplace=False)
     Forced = df[1].set_axis(['S.No.', 'Station', 'State', 'Owner', 'Unit No.', 'Cap.(MW)', 'Reasons', 'Outage', 'Time', 'Expected revival'], axis=1, inplace=False)
     Planned.dropna(inplace=True)
     Forced.dropna(inplace=True)
     NRLDC = pd.concat([Planned, Forced])
 
-    # Save NRLDC data in the NRLDC folder
-    if not os.path.exists("NRLDC_daily_reports"):
-        os.makedirs("NRLDC_daily_reports")
-
-    # path to the new directory
-    path = "NRLDC_daily_reports/"
-
-    NRLDC.to_excel(os.path.join(path, "NRLDC_{}.xlsx".format(dt)), index=False)
+    NRLDC.to_excel("NRLDC_{}.xlsx".format(dt), index=False)
 
 # Streamlit app
 def main():
